@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YASH.exe // AI & Full Stack Developer</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --yellow: #FFD600;
+            --black: #0a0a0a;
+            --white: #f5f5f0;
+            --border: 3px solid #0a0a0a;
+            --shadow: 5px 5px 0px #0a0a0a;
+            --shadow-yellow: 5px 5px 0px #FFD600;
+            --red: #FF3333;
+            --blue: #4D96FF;
+            --green: #33FF99;
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--white);
+            color: var(--black);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* ── CURSOR ─────────────────────── */
+        #cursor {
+            width: 14px;
+            height: 14px;
+            background: var(--yellow);
+            border: 2px solid var(--black);
+            border-radius: 0;
+            position: fixed;
+            z-index: 9999;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: width .15s, height .15s, background .15s;
+        }
+
+        #cursor.hover {
+            width: 44px;
+            height: 44px;
+            background: var(--black);
+            border-color: var(--yellow);
+        }
+
+        /* ── NOISE OVERLAY ──────────────── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        /* ── SCROLLBAR ──────────────────── */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--white);
+            border-left: 2px solid var(--black);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--black);
+        }
+
+        /* ── UTILITY ────────────────────── */
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .border-brutal {
+            border: var(--border);
+        }
+
+        .shadow-brutal {
+            box-shadow: var(--shadow);
+        }
+
+        .shadow-yellow {
+            box-shadow: var(--shadow-yellow);
+        }
+
+        /* ── NAV ────────────────────────── */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: var(--yellow);
+            border-bottom: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            height: 56px;
+        }
+
+        .nav-logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0;
+        }
+
+        .nav-links a {
+            display: block;
+            padding: 0 1.2rem;
+            height: 56px;
+            line-height: 56px;
+            border-left: var(--border);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--black);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.15s;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .nav-links a:hover {
+            background: var(--black);
+            color: var(--yellow);
+        }
+
+        .nav-hire {
+            background: var(--black) !important;
+            color: var(--yellow) !important;
+        }
+
+        .nav-hire:hover {
+            background: var(--red) !important;
+            color: var(--white) !important;
+        }
+
+        /* ── STATUS BAR ─────────────────── */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: var(--black);
+            border-top: var(--border);
+            height: 30px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .status-label {
+            background: var(--yellow);
+            border-right: var(--border);
+            height: 30px;
+            line-height: 30px;
+            padding: 0 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .marquee-wrap {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .marquee-track {
+            display: flex;
+            gap: 0;
+            animation: marquee 25s linear infinite;
+            white-space: nowrap;
+        }
+
+        .marquee-track span {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--white);
+            padding: 0 2rem;
+            opacity: 0.7;
+        }
+
+        .marquee-track span::before {
+            content: '/// ';
+            color: var(--yellow);
+            opacity: 1;
+        }
+
+        @keyframes marquee {
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* ── HERO ───────────────────────── */
+        #home {
+            min-height: 100vh;
+            padding: 100px 2rem 80px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            border-bottom: var(--border);
+        }
+
+        .hero-left {
+            border-right: var(--border);
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            background: var(--black);
+            color: var(--yellow);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 500;
+            padding: .4rem .9rem;
+            border: var(--border);
+            margin-bottom: 1.5rem;
+            width: fit-content;
+        }
+
+        .hero-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0
+            }
+        }
+
+        .hero-name {
+            font-size: clamp(3rem, 6vw, 5.5rem);
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -3px;
+            margin-bottom: .5rem;
+        }
+
+        .hero-name span {
+            color: var(--yellow);
+            -webkit-text-stroke: 2px var(--black);
+        }
+
+        .hero-role {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(1rem, 2vw, 1.4rem);
+            font-weight: 400;
+            color: #444;
+            margin-bottom: 1.5rem;
+            border-left: 5px solid var(--yellow);
+            padding-left: 1rem;
+        }
+
+        .hero-desc {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #333;
+            max-width: 480px;
+            margin-bottom: 2rem;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--black);
+            color: var(--yellow);
+            border: var(--border);
+            padding: .8rem 1.8rem;
+            font-weight: 700;
+            font-size: .9rem;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: var(--shadow);
+            transition: transform .1s, box-shadow .1s;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn-primary:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 7px 7px 0 var(--black);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--black);
+            border: var(--border);
+            padding: .8rem 1.8rem;
+            font-weight: 700;
+            font-size: .9rem;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: var(--shadow);
+            transition: transform .1s, box-shadow .1s;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn-secondary:hover {
+            background: var(--yellow);
+            transform: translate(-2px, -2px);
+            box-shadow: 7px 7px 0 var(--black);
+        }
+
+        .hero-right {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .stat-card {
+            border: var(--border);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            background: var(--white);
+            transition: transform .1s, box-shadow .1s;
+        }
+
+        .stat-card:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 8px 8px 0 var(--black);
+        }
+
+        .stat-card:nth-child(1) {
+            background: var(--yellow);
+        }
+
+        .stat-card:nth-child(2) {
+            background: var(--black);
+            color: var(--white);
+        }
+
+        .stat-card:nth-child(3) {
+            background: var(--black);
+            color: var(--white);
+        }
+
+        .stat-card:nth-child(4) {
+            background: #FF3333;
+            color: var(--white);
+        }
+
+        .stat-num {
+            font-size: 2.5rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: .75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: .3rem;
+            opacity: .7;
+        }
+
+        /* Terminal box */
+        .terminal {
+            border: var(--border);
+            box-shadow: var(--shadow);
+            background: var(--black);
+        }
+
+        .terminal-bar {
+            background: #1a1a1a;
+            border-bottom: 2px solid #333;
+            padding: .6rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .t-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-body {
+            padding: 1rem 1.2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .78rem;
+            line-height: 1.8;
+        }
+
+        .t-green {
+            color: #33FF99;
+        }
+
+        .t-yellow {
+            color: var(--yellow);
+        }
+
+        .t-blue {
+            color: #4D96FF;
+        }
+
+        .t-white {
+            color: #f0f0f0;
+        }
+
+        .t-dim {
+            color: #666;
+        }
+
+        /* ── SECTION STYLES ─────────────── */
+        section {
+            border-bottom: var(--border);
+        }
+
+        .section-header {
+            background: var(--black);
+            color: var(--yellow);
+            padding: 1rem 2rem;
+            border-bottom: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .section-count {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .72rem;
+            color: #666;
+            letter-spacing: 1px;
+        }
+
+        .section-body {
+            padding: 3rem 2rem;
+        }
+
+        /* ── ABOUT ──────────────────────── */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .about-left {
+            border-right: var(--border);
+            padding: 3rem;
+        }
+
+        .about-right {
+            padding: 3rem;
+        }
+
+        .about-heading {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .about-heading mark {
+            background: var(--yellow);
+            padding: 0 .3rem;
+        }
+
+        .about-text {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .about-quote {
+            border-left: 5px solid var(--yellow);
+            padding: 1rem 1.5rem;
+            background: #f9f9f0;
+            border-top: var(--border);
+            border-right: var(--border);
+            border-bottom: var(--border);
+            font-style: italic;
+            font-size: .95rem;
+            color: #222;
+            margin-top: 1.5rem;
+        }
+
+        .info-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            border: var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .info-row {
+            display: flex;
+            border-bottom: 2px solid var(--black);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .8rem;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-key {
+            background: var(--black);
+            color: var(--yellow);
+            padding: .8rem 1rem;
+            min-width: 130px;
+            font-weight: 700;
+        }
+
+        .info-val {
+            padding: .8rem 1rem;
+            color: var(--black);
+        }
+
+        /* ── SKILLS ─────────────────────── */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+        }
+
+        .skill-col {
+            border-right: var(--border);
+        }
+
+        .skill-col:last-child {
+            border-right: none;
+        }
+
+        .skill-col-header {
+            background: var(--yellow);
+            border-bottom: var(--border);
+            padding: .8rem 1.2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .skill-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .9rem 1.2rem;
+            border-bottom: 2px solid #e0e0e0;
+            transition: background .1s;
+        }
+
+        .skill-item:hover {
+            background: var(--yellow);
+        }
+
+        .skill-name {
+            font-size: .9rem;
+            font-weight: 600;
+        }
+
+        .skill-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem;
+            background: var(--black);
+            color: var(--yellow);
+            padding: .2rem .5rem;
+            border: 2px solid var(--black);
+        }
+
+        .skill-tag.adv {
+            background: var(--yellow);
+            color: var(--black);
+        }
+
+        .skill-tag.int {
+            background: #4D96FF;
+            color: white;
+        }
+
+        /* ── PROJECTS ───────────────────── */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .project-card {
+            border-right: var(--border);
+            border-bottom: var(--border);
+            padding: 2rem;
+            transition: transform .15s, box-shadow .15s;
+            position: relative;
+            overflow: hidden;
+            background: var(--white);
+        }
+
+        .project-card:nth-child(even) {
+            border-right: none;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+        }
+
+        .project-card:nth-child(1)::before {
+            background: var(--yellow);
+        }
+
+        .project-card:nth-child(2)::before {
+            background: var(--red);
+        }
+
+        .project-card:nth-child(3)::before {
+            background: var(--blue);
+        }
+
+        .project-card:nth-child(4)::before {
+            background: var(--green);
+        }
+
+        .project-card:hover {
+            background: #fafaf0;
+        }
+
+        .proj-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .7rem;
+            color: #999;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: .8rem;
+        }
+
+        .proj-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: .5rem;
+            line-height: 1.2;
+        }
+
+        .proj-sub {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .72rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .proj-desc {
+            font-size: .9rem;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 1.2rem;
+        }
+
+        .proj-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .proj-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem;
+            font-weight: 700;
+            padding: .25rem .6rem;
+            border: 2px solid var(--black);
+            background: var(--white);
+            text-transform: uppercase;
+        }
+
+        .proj-links {
+            display: flex;
+            gap: .8rem;
+        }
+
+        .proj-link {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .75rem;
+            font-weight: 700;
+            padding: .5rem 1rem;
+            border: 2px solid var(--black);
+            text-decoration: none;
+            color: var(--black);
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            transition: background .1s;
+        }
+
+        .proj-link:hover {
+            background: var(--black);
+            color: var(--yellow);
+        }
+
+        .proj-link.primary {
+            background: var(--black);
+            color: var(--yellow);
+        }
+
+        .proj-link.primary:hover {
+            background: var(--yellow);
+            color: var(--black);
+        }
+
+        /* Upcoming badge */
+        .badge {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            font-weight: 700;
+            padding: .2rem .6rem;
+            background: var(--red);
+            color: white;
+            border: 2px solid var(--black);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-left: .5rem;
+            vertical-align: middle;
+        }
+
+        /* ── HACKATHONS ─────────────────── */
+        .hack-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .hack-card {
+            border-right: var(--border);
+            border-bottom: var(--border);
+            padding: 2rem;
+        }
+
+        .hack-card:nth-child(even) {
+            border-right: none;
+        }
+
+        .hack-year {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .7rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: .8rem;
+        }
+
+        .hack-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: .3rem;
+        }
+
+        .hack-org {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .75rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .hack-desc {
+            font-size: .88rem;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* ── GITHUB STATS ───────────────── */
+        .github-layout {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 0;
+        }
+
+        .github-info {
+            border-right: var(--border);
+            padding: 3rem;
+        }
+
+        .github-graph {
+            padding: 3rem;
+        }
+
+        .gh-stat {
+            border: var(--border);
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .gh-stat-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #444;
+        }
+
+        .gh-stat-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .gh-link {
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        /* ── CONTACT ────────────────────── */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .contact-left {
+            border-right: var(--border);
+            padding: 3rem;
+        }
+
+        .contact-right {
+            padding: 3rem;
+        }
+
+        .contact-heading {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            letter-spacing: -2px;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .contact-sub {
+            font-size: 1rem;
+            color: #444;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: var(--border);
+            padding: 1rem 1.2rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            text-decoration: none;
+            color: var(--black);
+            transition: transform .1s, box-shadow .1s, background .1s;
+        }
+
+        .contact-item:hover {
+            background: var(--yellow);
+            transform: translate(-3px, -3px);
+            box-shadow: 8px 8px 0 var(--black);
+        }
+
+        .contact-icon {
+            font-size: 1.4rem;
+        }
+
+        .contact-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .7rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .contact-val {
+            font-size: .9rem;
+            font-weight: 600;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-label {
+            display: block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: .4rem;
+        }
+
+        .form-input {
+            width: 100%;
+            border: var(--border);
+            padding: .8rem 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: .9rem;
+            background: var(--white);
+            outline: none;
+            box-shadow: 3px 3px 0 var(--black);
+            transition: box-shadow .1s;
+        }
+
+        .form-input:focus {
+            box-shadow: 5px 5px 0 var(--yellow);
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-submit {
+            width: 100%;
+            background: var(--black);
+            color: var(--yellow);
+            border: var(--border);
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: none;
+            box-shadow: var(--shadow);
+            transition: transform .1s, box-shadow .1s;
+        }
+
+        .form-submit:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 7px 7px 0 var(--black);
+            background: var(--red);
+        }
+
+        /* ── FOOTER ─────────────────────── */
+        footer {
+            background: var(--black);
+            color: var(--white);
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: var(--border);
+            padding-bottom: 3rem;
+        }
+
+        .footer-logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--yellow);
+        }
+
+        .footer-copy {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .72rem;
+            color: #666;
+        }
+
+        /* ── REVEAL ANIMATION ───────────── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity .5s ease, transform .5s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── GLITCH ─────────────────────── */
+        @keyframes glitch1 {
+
+            0%,
+            100% {
+                clip-path: inset(0 0 95% 0)
+            }
+
+            50% {
+                clip-path: inset(30% 0 40% 0)
+            }
+        }
+
+        @keyframes glitch2 {
+
+            0%,
+            100% {
+                clip-path: inset(50% 0 30% 0)
+            }
+
+            50% {
+                clip-path: inset(80% 0 5% 0)
+            }
+        }
+
+        .glitch {
+            position: relative;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            font-size: inherit;
+            font-weight: inherit;
+            letter-spacing: inherit;
+        }
+
+        .glitch::before {
+            color: var(--red);
+            animation: glitch1 3s infinite;
+            transform: translateX(-2px);
+        }
+
+        .glitch::after {
+            color: var(--blue);
+            animation: glitch2 3s infinite;
+            transform: translateX(2px);
+        }
+
+        @media (max-width: 768px) {
+
+            #home,
+            .about-grid,
+            .projects-grid,
+            .hack-grid,
+            .contact-grid,
+            .github-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-left,
+            .about-left,
+            .contact-left,
+            .github-info {
+                border-right: none;
+                border-bottom: var(--border);
+            }
+
+            .skill-col {
+                border-right: none;
+                border-bottom: var(--border);
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="cursor"></div>
+
+    <!-- NAV -->
+    <nav>
+        <div class="nav-logo mono">YASH.exe</div>
+        <div class="nav-links">
+            <a href="#about">/ABOUT</a>
+            <a href="#skills">/SKILLS</a>
+            <a href="#projects">/WORK</a>
+            <a href="#hackathons">/LOGS</a>
+            <a href="#github">/STATS</a>
+            <a href="#contact" class="nav-hire">HIRE ME</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section id="home">
+        <div class="hero-left">
+            <div class="hero-tag">
+                <span class="hero-dot"></span>
+                <span class="mono">SYSTEM STATUS: ONLINE // OPEN FOR WORK</span>
+            </div>
+            <h1 class="hero-name glitch" data-text="YASH PATEL">
+                YASH<br /><span>PATEL</span>
+            </h1>
+            <p class="hero-role">&gt;_ AI & Full-Stack Developer</p>
+            <p class="hero-desc">
+                B.Tech IT @ CHARUSAT. I build AI-powered systems that solve real problems —
+                from civic infrastructure platforms to cognitive load estimators using deep learning.
+                <strong>I refuse to build boring things.</strong>
+            </p>
+            <div class="hero-btns">
+                <a href="#projects" class="btn-primary">VIEW DATABASE</a>
+                <a href="Yash_Patel_Resume.pdf" class="btn-secondary" download>DOWNLOAD CV</a>
+            </div>
+        </div>
+
+        <div class="hero-right">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-num">2</div>
+                    <div class="stat-label">Production Projects</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num">7+</div>
+                    <div class="stat-label">Tech Stacks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num">7.69</div>
+                    <div class="stat-label">CGPA / 10.0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num">2</div>
+                    <div class="stat-label">Hackathons</div>
+                </div>
+            </div>
+
+            <div class="terminal">
+                <div class="terminal-bar">
+                    <div class="t-dot" style="background:#FF5F57"></div>
+                    <div class="t-dot" style="background:#FFBD2E"></div>
+                    <div class="t-dot" style="background:#28C840"></div>
+                    <span class="mono" style="font-size:.7rem;color:#666;margin-left:.5rem">yash@charusat: ~</span>
+                </div>
+                <div class="terminal-body">
+                    <div><span class="t-green">yash@charusat</span><span class="t-dim">:</span><span
+                            class="t-blue">~</span><span class="t-dim">$</span> <span class="t-white">whoami</span>
+                    </div>
+                    <div class="t-yellow">// Yash Kiranbhai Patel</div>
+                    <div class="t-dim">// B.Tech IT, 3rd Year — CHARUSAT</div>
+                    <div style="margin-top:.5rem"><span class="t-green">yash@charusat</span><span
+                            class="t-dim">:</span><span class="t-blue">~</span><span class="t-dim">$</span> <span
+                            class="t-white">skills --list</span></div>
+                    <div class="t-yellow">[ React, Next.js, Node.js, Python ]</div>
+                    <div class="t-yellow">[ MongoDB, Supabase, Gemini AI, OpenAI ]</div>
+                    <div class="t-yellow">[ TensorFlow, EfficientNet, BiLSTM ]</div>
+                    <div style="margin-top:.5rem"><span class="t-green">yash@charusat</span><span
+                            class="t-dim">:</span><span class="t-blue">~</span><span class="t-dim">$</span> <span
+                            class="t-white">status --current</span></div>
+                    <div class="t-green">✓ Building BharatHire AI @ OceanLab Hacks 2026</div>
+                    <div class="t-dim">█<span style="animation:blink 1s infinite;display:inline-block">_</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+        <div class="section-header">
+            <span class="section-title">&gt;_ ABOUT // WHO_AM_I</span>
+            <span class="section-count mono">SECTION_01 / 06</span>
+        </div>
+        <div class="about-grid">
+            <div class="about-left reveal">
+                <h2 class="about-heading">I build things that <mark>actually work.</mark></h2>
+                <p class="about-text">
+                    I'm Yash Patel, a 3rd-year B.Tech IT student at CHARUSAT University, Gujarat.
+                    I specialize in building production-grade full-stack applications with deep AI/ML integration —
+                    not just demos, but real systems with real architecture.
+                </p>
+                <p class="about-text">
+                    My projects span AI-powered civic management platforms, real-time cognitive load estimators using
+                    dual-branch deep learning, and India's first AI career co-pilot for students.
+                    I don't just write code — I design systems.
+                </p>
+                <div class="about-quote">
+                    "The web has become a sea of identical, sanitized templates.
+                    I build things that refuse to be boring." <br />
+                    <span class="mono" style="font-size:.8rem;color:#666">— YASH.exe</span>
+                </div>
+            </div>
+            <div class="about-right reveal">
+                <div class="info-grid">
+                    <div class="info-row">
+                        <div class="info-key">NAME</div>
+                        <div class="info-val">Yash Kiranbhai Patel</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-key">UNIVERSITY</div>
+                        <div class="info-val">CHARUSAT, Changa, Gujarat</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-key">DEGREE</div>
+                        <div class="info-val">B.Tech — Information Technology</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-key">YEAR</div>
+                        <div class="info-val">3rd Year (2023 – Present)</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-key">CGPA</div>
+                        <div class="info-val">7.69 / 10.0</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-key">LOCATION</div>
+                        <div class="info-val">Gujarat, India 📍</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-key">EMAIL</div>
+                        <div class="info-val">yashpatelkiran4@gmail.com</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-key">STATUS</div>
+                        <div class="info-val" style="color:#16a34a;font-weight:700">🟢 AVAILABLE FOR INTERNSHIPS</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-key">GITHUB</div>
+                        <div class="info-val"><a href="https://github.com/Deadpool20x"
+                                style="color:#4D96FF">github.com/Deadpool20x</a></div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-key">LANGUAGES</div>
+                        <div class="info-val">English · Gujarati · Hindi</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills">
+        <div class="section-header">
+            <span class="section-title">&gt;_ TECH_STACK // SYSTEM_NODES</span>
+            <span class="section-count mono">SECTION_02 / 06</span>
+        </div>
+        <div class="skills-grid">
+            <div class="skill-col reveal">
+                <div class="skill-col-header">LANGUAGES // CORE</div>
+                <div class="skill-item"><span class="skill-name">Python</span><span
+                        class="skill-tag adv">ADVANCED</span></div>
+                <div class="skill-item"><span class="skill-name">JavaScript</span><span
+                        class="skill-tag adv">ADVANCED</span></div>
+                <div class="skill-item"><span class="skill-name">Java</span><span
+                        class="skill-tag int">INTERMEDIATE</span></div>
+                <div class="skill-item"><span class="skill-name">C / C++</span><span
+                        class="skill-tag int">INTERMEDIATE</span></div>
+                <div class="skill-item"><span class="skill-name">HTML5 / CSS3</span><span
+                        class="skill-tag adv">ADVANCED</span></div>
+            </div>
+            <div class="skill-col reveal">
+                <div class="skill-col-header">FRAMEWORKS // RUNTIME</div>
+                <div class="skill-item"><span class="skill-name">React.js</span><span
+                        class="skill-tag adv">ADVANCED</span></div>
+                <div class="skill-item"><span class="skill-name">Next.js 14</span><span
+                        class="skill-tag adv">ADVANCED</span></div>
+                <div class="skill-item"><span class="skill-name">Node.js</span><span
+                        class="skill-tag adv">ADVANCED</span></div>
+                <div class="skill-item"><span class="skill-name">Tailwind CSS</span><span
+                        class="skill-tag adv">ADVANCED</span></div>
+                <div class="skill-item"><span class="skill-name">TensorFlow/Keras</span><span
+                        class="skill-tag int">INTERMEDIATE</span></div>
+            </div>
+            <div class="skill-col reveal">
+                <div class="skill-col-header">AI/ML // INTELLIGENCE</div>
+                <div class="skill-item"><span class="skill-name">Google Gemini API</span><span
+                        class="skill-tag adv">ADVANCED</span></div>
+                <div class="skill-item"><span class="skill-name">OpenAI GPT-4o</span><span
+                        class="skill-tag adv">ADVANCED</span></div>
+                <div class="skill-item"><span class="skill-name">EfficientNet-B0</span><span
+                        class="skill-tag int">INTERMEDIATE</span></div>
+                <div class="skill-item"><span class="skill-name">Bidirectional LSTM</span><span
+                        class="skill-tag int">INTERMEDIATE</span></div>
+                <div class="skill-item"><span class="skill-name">Roboflow (CV)</span><span
+                        class="skill-tag int">INTERMEDIATE</span></div>
+            </div>
+        </div>
+        <!-- Second row -->
+        <div class="skills-grid" style="border-top: var(--border)">
+            <div class="skill-col reveal">
+                <div class="skill-col-header">DATABASES // DATA_LAYER</div>
+                <div class="skill-item"><span class="skill-name">MongoDB Atlas</span><span
+                        class="skill-tag adv">ADVANCED</span></div>
+                <div class="skill-item"><span class="skill-name">Mongoose ODM</span><span
+                        class="skill-tag adv">ADVANCED</span></div>
+                <div class="skill-item"><span class="skill-name">Supabase</span><span
+                        class="skill-tag int">INTERMEDIATE</span></div>
+                <div class="skill-item"><span class="skill-name">SQL</span><span
+                        class="skill-tag int">INTERMEDIATE</span></div>
+            </div>
+            <div class="skill-col reveal">
+                <div class="skill-col-header">CLOUD & TOOLS // INFRA</div>
+                <div class="skill-item"><span class="skill-name">Vercel</span><span
+                        class="skill-tag adv">ADVANCED</span></div>
+                <div class="skill-item"><span class="skill-name">Cloudinary</span><span
+                        class="skill-tag adv">ADVANCED</span></div>
+                <div class="skill-item"><span class="skill-name">Git & GitHub</span><span
+                        class="skill-tag adv">ADVANCED</span></div>
+                <div class="skill-item"><span class="skill-name">Resend API</span><span
+                        class="skill-tag int">INTERMEDIATE</span></div>
+            </div>
+            <div class="skill-col reveal">
+                <div class="skill-col-header">CONCEPTS // ARCHITECTURE</div>
+                <div class="skill-item"><span class="skill-name">REST API Design</span><span
+                        class="skill-tag adv">ADVANCED</span></div>
+                <div class="skill-item"><span class="skill-name">RBAC Systems</span><span
+                        class="skill-tag adv">ADVANCED</span></div>
+                <div class="skill-item"><span class="skill-name">System Design</span><span
+                        class="skill-tag int">INTERMEDIATE</span></div>
+                <div class="skill-item"><span class="skill-name">Deep Learning</span><span
+                        class="skill-tag int">INTERMEDIATE</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+        <div class="section-header">
+            <span class="section-title">&gt;_ SELECTED_WORKS // PROJECT_DATABASE</span>
+            <span class="section-count mono">SECTION_03 / 06</span>
+        </div>
+        <div class="projects-grid">
+
+            <!-- CivicPulse -->
+            <div class="project-card reveal">
+                <div class="proj-num">PROJECT_001 // PRODUCTION</div>
+                <h3 class="proj-title">CivicPulse</h3>
+                <p class="proj-sub">AI-Powered Civic Issue Management Platform</p>
+                <p class="proj-desc">
+                    Full-stack production platform bridging citizens and municipal government.
+                    Features a 3-layer AI pipeline (Roboflow → Gemini → GPT-4o), 5-role RBAC system,
+                    automated SLA enforcement with 4 priority tiers, geospatial duplicate detection,
+                    and a full transactional email pipeline. Built like a real SaaS product.
+                </p>
+                <div class="proj-tags">
+                    <span class="proj-tag">Next.js 14</span>
+                    <span class="proj-tag">MongoDB</span>
+                    <span class="proj-tag">Gemini AI</span>
+                    <span class="proj-tag">OpenAI</span>
+                    <span class="proj-tag">Roboflow</span>
+                    <span class="proj-tag">Cloudinary</span>
+                    <span class="proj-tag">Tailwind</span>
+                </div>
+                <div class="proj-links">
+                    <a href="https://github.com/Deadpool20x" class="proj-link primary" target="_blank">VIEW CODE →</a>
+                    <a href="#" class="proj-link">LIVE DEMO</a>
+                </div>
+            </div>
+
+            <!-- CogniScan Pro -->
+            <div class="project-card reveal">
+                <div class="proj-num">PROJECT_002 // RESEARCH</div>
+                <h3 class="proj-title">CogniScan Pro</h3>
+                <p class="proj-sub">Real-Time Cognitive Load Estimation via Deep Learning</p>
+                <p class="proj-desc">
+                    Novel dual-branch deep learning architecture fusing EfficientNet-B0 (spatial frame-level
+                    features from facial images) with Bidirectional LSTM (temporal sequence modeling across
+                    video frames) for real-time 4-class cognitive load classification. End-to-end training
+                    pipeline with live webcam inference.
+                </p>
+                <div class="proj-tags">
+                    <span class="proj-tag">Python</span>
+                    <span class="proj-tag">TensorFlow</span>
+                    <span class="proj-tag">EfficientNet-B0</span>
+                    <span class="proj-tag">BiLSTM</span>
+                    <span class="proj-tag">OpenCV</span>
+                    <span class="proj-tag">Keras</span>
+                </div>
+                <div class="proj-links">
+                    <a href="https://github.com/Deadpool20x" class="proj-link primary" target="_blank">VIEW CODE →</a>
+                </div>
+            </div>
+
+            <!-- BharatHire AI -->
+            <div class="project-card reveal">
+                <div class="proj-num">PROJECT_003 // IN_PROGRESS <span class="badge">LIVE BUILD</span></div>
+                <h3 class="proj-title">BharatHire AI</h3>
+                <p class="proj-sub">India's First Career Intelligence Platform for Students</p>
+                <p class="proj-desc">
+                    Building for OceanLab X CHARUSAT Hacks 2026. AI career co-pilot for Tier 2/3 Indian
+                    students — dual ATS + Human Readability scoring, Naukri vs LinkedIn cross-profile checker,
+                    30-day personalized skill roadmap, mock interview bot, and Hinglish intro generator.
+                    Addresses India's 57.4% graduate employability crisis.
+                </p>
+                <div class="proj-tags">
+                    <span class="proj-tag">React</span>
+                    <span class="proj-tag">Supabase</span>
+                    <span class="proj-tag">Claude API</span>
+                    <span class="proj-tag">Tailwind</span>
+                    <span class="proj-tag">Vercel</span>
+                </div>
+                <div class="proj-links">
+                    <a href="https://github.com/Deadpool20x" class="proj-link primary" target="_blank">VIEW CODE →</a>
+                </div>
+            </div>
+
+            <!-- More coming -->
+            <div class="project-card reveal"
+                style="background:#fafafa;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:300px;">
+                <div class="mono" style="font-size:2.5rem;margin-bottom:1rem;">+</div>
+                <div class="proj-num">MORE_INCOMING</div>
+                <p style="color:#999;font-size:.9rem;margin:1rem 0">Always building. Always shipping.</p>
+                <a href="https://github.com/Deadpool20x" class="proj-link" target="_blank">VIEW ALL ON GITHUB →</a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- HACKATHONS -->
+    <section id="hackathons">
+        <div class="section-header">
+            <span class="section-title">&gt;_ EXPERIENCE_LOG // HACKATHONS</span>
+            <span class="section-count mono">SECTION_04 / 06</span>
+        </div>
+        <div class="hack-grid">
+            <div class="hack-card reveal">
+                <div class="hack-year">APRIL 2026 // UPCOMING</div>
+                <h3 class="hack-title">OceanLab X CHARUSAT Hacks 2026 <span class="badge">UPCOMING</span></h3>
+                <div class="hack-org mono">DEPSTAR, CHARUSAT · 48-Hour AI-First SaaS Hackathon · Open Innovation Track
+                </div>
+                <p class="hack-desc">
+                    Competing among 400–500 students. Building BharatHire AI — a research-backed, India-specific
+                    career intelligence platform. Idea derived from deep analysis of gaps in Jobscan, ResumeWorded,
+                    and LinkedIn's existing tools. Selected Open Innovation track to maximize uniqueness.
+                </p>
+            </div>
+            <div class="hack-card reveal">
+                <div class="hack-year">2024 // COMPLETED</div>
+                <h3 class="hack-title">CVMU Hackathon 4.0</h3>
+                <div class="hack-org mono">Charotar Vidya Mandal University · 24-Hour Hackathon</div>
+                <p class="hack-desc">
+                    Competed in a 24-hour intensive hackathon environment. Built and demonstrated a working
+                    technical prototype under strict time constraints. Gained hands-on experience in
+                    rapid prototyping, team coordination, and live product pitching to judges.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- GITHUB STATS -->
+    <section id="github">
+        <div class="section-header">
+            <span class="section-title">&gt;_ CODING_STATS // LIVE_FEED</span>
+            <span class="section-count mono">SECTION_05 / 06</span>
+        </div>
+        <div class="github-layout">
+            <div class="github-info reveal">
+                <div class="mono"
+                    style="font-size:.75rem;color:#999;margin-bottom:1.5rem;text-transform:uppercase;letter-spacing:2px">
+                    GITHUB // Deadpool20x</div>
+                <div class="gh-stat">
+                    <span class="gh-stat-label">REPOSITORIES</span>
+                    <span class="gh-stat-val" id="gh-repos">—</span>
+                </div>
+                <div class="gh-stat">
+                    <span class="gh-stat-label">FOLLOWERS</span>
+                    <span class="gh-stat-val" id="gh-followers">—</span>
+                </div>
+                <div class="gh-stat">
+                    <span class="gh-stat-label">FOLLOWING</span>
+                    <span class="gh-stat-val" id="gh-following">—</span>
+                </div>
+                <div class="gh-stat">
+                    <span class="gh-stat-label">JOINED</span>
+                    <span class="gh-stat-val" id="gh-joined">—</span>
+                </div>
+                <a href="https://github.com/Deadpool20x" target="_blank" class="proj-link primary"
+                    style="display:block;text-align:center;margin-top:1.5rem;">VIEW_GH →</a>
+            </div>
+            <div class="github-graph reveal">
+                <div class="mono"
+                    style="font-size:.75rem;color:#999;margin-bottom:1rem;text-transform:uppercase;letter-spacing:2px">
+                    CONTRIBUTION_MATRIX // LAST 12 MONTHS</div>
+                <img src="https://ghchart.rshah.org/FFD600/Deadpool20x" alt="GitHub contribution graph"
+                    style="width:100%;border:var(--border);box-shadow:var(--shadow);"
+                    onerror="this.style.display='none'" />
+                <div style="margin-top:1.5rem">
+                    <img src="https://github-readme-stats.vercel.app/api?username=Deadpool20x&show_icons=true&theme=default&hide_border=true&title_color=0a0a0a&icon_color=FFD600&text_color=333333&bg_color=f5f5f0"
+                        alt="GitHub Stats" style="width:100%;border:var(--border);box-shadow:var(--shadow);"
+                        onerror="this.style.display='none'" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+        <div class="section-header">
+            <span class="section-title">&gt;_ CONTACT // TRANSMIT_DATA</span>
+            <span class="section-count mono">SECTION_06 / 06</span>
+        </div>
+        <div class="contact-grid">
+            <div class="contact-left reveal">
+                <h2 class="contact-heading">Let's build something <span
+                        style="background:var(--yellow);padding:0 .2rem">bold.</span></h2>
+                <p class="contact-sub">
+                    I'm currently available for internships, freelance work, and open to full-time opportunities after
+                    graduation.
+                    If you have a project that refuses to be boring — let's talk.
+                </p>
+                <a href="mailto:yashpatelkiran4@gmail.com" class="contact-item">
+                    <span class="contact-icon">📧</span>
+                    <div>
+                        <div class="contact-label">EMAIL</div>
+                        <div class="contact-val">yashpatelkiran4@gmail.com</div>
+                    </div>
+                </a>
+                <a href="tel:+919664837412" class="contact-item">
+                    <span class="contact-icon">📱</span>
+                    <div>
+                        <div class="contact-label">PHONE</div>
+                        <div class="contact-val">+91 96648 37412</div>
+                    </div>
+                </a>
+                <a href="https://github.com/Deadpool20x" target="_blank" class="contact-item">
+                    <span class="contact-icon"><i class="ri-github-fill"></i></span>
+                    <div>
+                        <div class="contact-label">GITHUB</div>
+                        <div class="contact-val">github.com/Deadpool20x</div>
+                    </div>
+                </a>
+                <a href="https://www.linkedin.com/in/yash-patel-3288773b6" target="_blank" class="contact-item">
+                    <span class="contact-icon"><i class="ri-linkedin-fill"></i></span>
+                    <div>
+                        <div class="contact-label">LINKEDIN</div>
+                        <div class="contact-val">yash-patel-3288773b6</div>
+                    </div>
+                </a>
+                <div class="contact-item" style="cursor:none">
+                    <span class="contact-icon">📍</span>
+                    <div>
+                        <div class="contact-label">LOCATION</div>
+                        <div class="contact-val">Gujarat, India // Remote Ready</div>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-right reveal">
+                <div class="mono"
+                    style="font-size:.75rem;color:#999;margin-bottom:1.5rem;text-transform:uppercase;letter-spacing:2px">
+                    START_TRANSMISSION</div>
+                <form onsubmit="handleSubmit(event)">
+                    <div class="form-group">
+                        <label class="form-label">NAME *</label>
+                        <input type="text" class="form-input" placeholder="Your name" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">EMAIL *</label>
+                        <input type="email" class="form-input" placeholder="your@email.com" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">SUBJECT</label>
+                        <input type="text" class="form-input" placeholder="What's this about?" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">MESSAGE *</label>
+                        <textarea class="form-input" placeholder="Tell me about your project..." required></textarea>
+                    </div>
+                    <button type="submit" class="form-submit">TRANSMIT MESSAGE →</button>
+                </form>
+                <div id="form-success"
+                    style="display:none;margin-top:1rem;padding:1rem;background:var(--yellow);border:var(--border);font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700">
+                    ✓ MESSAGE_RECEIVED // I'll get back to you within 24h.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div>
+            <div class="footer-logo">YASH.exe</div>
+            <div class="footer-copy" style="margin-top:.5rem">© 2026 Yash Kiranbhai Patel // SYSTEM_END</div>
+        </div>
+        <div class="mono" style="font-size:.7rem;color:#444;text-align:right">
+            <div>Built with: HTML · CSS · Vanilla JS</div>
+            <div style="margin-top:.3rem;color:#FFD600">Design inspired by Neo-Brutalism</div>
+        </div>
+    </footer>
+
+    <!-- STATUS BAR -->
+    <div class="status-bar">
+        <div class="status-label">/// LIVE</div>
+        <div class="marquee-wrap">
+            <div class="marquee-track">
+                <span>OPEN FOR WORK</span>
+                <span>FULL STACK DEVELOPMENT</span>
+                <span>AI & ML INTEGRATION</span>
+                <span>CHARUSAT UNIVERSITY</span>
+                <span>GUJARAT, INDIA</span>
+                <span>BUILDING BHARATHIRE AI</span>
+                <span>SYSTEM STATUS: ONLINE</span>
+                <span>OPEN FOR INTERNSHIPS</span>
+                <span>OPEN FOR WORK</span>
+                <span>FULL STACK DEVELOPMENT</span>
+                <span>AI & ML INTEGRATION</span>
+                <span>CHARUSAT UNIVERSITY</span>
+                <span>GUJARAT, INDIA</span>
+                <span>BUILDING BHARATHIRE AI</span>
+                <span>SYSTEM STATUS: ONLINE</span>
+                <span>OPEN FOR INTERNSHIPS</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── CURSOR ──────────────────────────────
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+        document.querySelectorAll('a, button, .skill-item, .project-card, .hack-card, .stat-card').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // ── SCROLL REVEAL ────────────────────────
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // ── GITHUB API ───────────────────────────
+        fetch('https://api.github.com/users/Deadpool20x')
+            .then(r => r.json())
+            .then(d => {
+                document.getElementById('gh-repos').textContent = d.public_repos ?? '—';
+                document.getElementById('gh-followers').textContent = d.followers ?? '—';
+                document.getElementById('gh-following').textContent = d.following ?? '—';
+                document.getElementById('gh-joined').textContent = d.created_at ? new Date(d.created_at).getFullYear() : '—';
+            }).catch(() => { });
+
+        // ── FORM ────────────────────────────────
+        function handleSubmit(e) {
+            e.preventDefault();
+            document.getElementById('form-success').style.display = 'block';
+            e.target.reset();
+            setTimeout(() => { document.getElementById('form-success').style.display = 'none'; }, 5000);
+        }
+
+        // ── ACTIVE NAV ───────────────────────────
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-links a');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) current = s.id; });
+            navLinks.forEach(a => {
+                a.style.background = '';
+                a.style.color = '';
+                if (a.getAttribute('href') === '#' + current) {
+                    a.style.background = '#0a0a0a';
+                    a.style.color = '#FFD600';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
