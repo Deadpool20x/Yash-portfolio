@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-jetbrains: "JetBrains Mono", monospace;
+  --font-space: "Space Grotesk", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #f5f5f0;
+  color: #0a0a0a;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── CUSTOM CURSOR ─────────────────────────── */
+#cursor {
+  width: 14px;
+  height: 14px;
+  background: #ffd600;
+  border: 2px solid #0a0a0a;
+  border-radius: 0;
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: width 0.15s, height 0.15s, background 0.15s;
+}
+
+#cursor.hover {
+  width: 44px;
+  height: 44px;
+  background: #0a0a0a;
+  border-color: #ffd600;
+}
+
+/* ── SCROLLBAR ──────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f5f5f0;
+  border-left: 2px solid #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #0a0a0a;
+}
+
+/* ── NOISE OVERLAY ──────────────────────────── */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* ── ANIMATIONS ─────────────────────────────── */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}
+
+.animate-blink {
+  animation: blink 1.5s infinite;
+}
+
+/* ── GLITCH ─────────────────────────────────── */
+.glitch {
+  position: relative;
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+}
+.glitch::before {
+  color: #ff3333;
+  animation: glitch1 3s infinite;
+  transform: translateX(-2px);
+}
+.glitch::after {
+  color: #4d96ff;
+  animation: glitch2 3s infinite;
+  transform: translateX(2px);
+}
+
+@keyframes glitch1 {
+  0%,
+  100% {
+    clip-path: inset(0 0 95% 0);
+  }
+  50% {
+    clip-path: inset(30% 0 40% 0);
+  }
+}
+@keyframes glitch2 {
+  0%,
+  100% {
+    clip-path: inset(50% 0 30% 0);
+  }
+  50% {
+    clip-path: inset(80% 0 5% 0);
+  }
+}
